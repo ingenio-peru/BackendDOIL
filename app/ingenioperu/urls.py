@@ -19,6 +19,7 @@ urlpatterns = [
     path('api/core/', include('core.urls')),
     path('api/ingreso_producto/', include('ingreso_producto.urls')),
     path('api/tanque/', include('tanque.urls')),
+    path('api/calidad/', include('calidad.urls')),
 ]
 
 urlpatterns += static(

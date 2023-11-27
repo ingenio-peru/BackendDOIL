@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'core',
     'ingreso_producto',
     'tanque',
+    'calidad',
 ]
 
 MIDDLEWARE = [
@@ -123,7 +124,7 @@ AUTH_USER_MODEL = 'core.User'
 
 LANGUAGE_CODE = 'es-pe'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Lima'
 
 USE_I18N = True
 
