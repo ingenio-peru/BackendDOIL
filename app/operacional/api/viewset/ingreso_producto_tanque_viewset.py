@@ -14,7 +14,7 @@ from decimal import Decimal
 
 
 class IngresoProductoTanqueViewSet(ModelViewSet):
-    queryset = IngresoProductoTanque.objects.all()
+    queryset = IngresoProductoTanque.objects.all().select_related('ingreso_producto')
     serializer_class = IngresoProductoTanqueSerializer
 
     filterset_fields = {

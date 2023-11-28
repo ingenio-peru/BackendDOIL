@@ -1,10 +1,12 @@
 from rest_framework import serializers, validators
+from rest_framework.fields import ReadOnlyField
 
 from operacional.models import IngresoProductoTanque
 
 
 
 class IngresoProductoTanqueSerializer(serializers.ModelSerializer):
+    ingreso_producto_guia_remision = ReadOnlyField(source='ingreso_producto.guia_remision')
 
     class Meta:
         model = IngresoProductoTanque

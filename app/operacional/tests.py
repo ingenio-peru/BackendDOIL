@@ -323,3 +323,61 @@ class IngresoProductoTanqueTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+class HistorialIngresoProductoTanqueTest(APITestCase):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.create_user(email="test@test.com", password="test1234")
+        self.instance_tanque = Tanque.objects.create(
+            nombre="T1",
+            capacidad= 100,
+            capacidad_disponible=100,
+        )
+        self.instance_ingreso_producto = IngresoProducto.objects.create(
+            fecha_ingreso=timezone.now().date(),
+            peso_bruto = 200,
+            peso_tara=100,
+            peso_neto=100,
+            peso_neto_disponible=100,
+        )
+        
+        self.instance_model = HistorialIngresoProductoTanque.objects.create(
+            ingreso_producto = self.instance_ingreso_producto,
+            tanque_origen = None,
+            tanque_destino = self.instance_tanque,
+            ingreso_producto_tanque =None,
+            cantidad = 100,
+            fecha = timezone.now().date()
+        )
+        self.url_list = "historialingresoproductotanque-list"
+
+    def test_list_historial(self):
+        self.client.force_authenticate(user=self.user)
+        url = reverse(APP_URL_NAME+self.url_list)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_historial_with_params(self):
+        self.client.force_authenticate(user=self.user)
+        url = reverse(APP_URL_NAME+self.url_list)
+        response = self.client.get(url, data={"ingreso_producto": self.instance_ingreso_producto.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_historial_with_params_without_res(self):
+        self.client.force_authenticate(user=self.user)
+        url = reverse(APP_URL_NAME+self.url_list)
+        ingreso_test = IngresoProducto.objects.create(
+            fecha_ingreso=timezone.now().date(),
+            peso_bruto = 200,
+            peso_tara=100,
+            peso_neto=100,
+            peso_neto_disponible=100,
+        )
+        response = self.client.get(url, data={"ingreso_producto": ingreso_test.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+

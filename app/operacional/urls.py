@@ -15,6 +15,7 @@ from operacional.api.viewset.tipo_tanque_viewset import TipoTanqueViewSet
 from operacional.api.viewset.calidad_viewset import CalidadViewSet
 from operacional.api.viewset.tipo_muestra_viewset import TipoMuestraViewSet
 from operacional.api.viewset.ingreso_producto_tanque_viewset import IngresoProductoTanqueViewSet
+from operacional.api.viewset.historial_ingreso_producto_tanque_viewset import HistorialIngresoProductoTanqueViewSet
 
 
 router = DefaultRouter()
@@ -28,6 +29,7 @@ router.register('tipo_ingreso', TipoIngresoViewSet)
 router.register('calidades', CalidadViewSet)
 router.register('tipo_muestra', TipoMuestraViewSet)
 router.register('ingreso_producto_tanque', IngresoProductoTanqueViewSet)
+router.register('historial_ingreso_producto_tanque', HistorialIngresoProductoTanqueViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
