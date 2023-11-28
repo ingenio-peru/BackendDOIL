@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from .models import TipoIngreso, IngresoProducto, Tanque, IngresoProductoTanque
+from .models import TipoIngreso, IngresoProducto, Tanque, IngresoProductoTanque, HistorialIngresoProductoTanque
 
 import decimal
 
@@ -206,8 +206,9 @@ class IngresoProductoTanqueTest(APITestCase):
             cantidad = 50,
             fecha = timezone.now().date(),
         )
-        self.url_list = "ingresoproductotanque-list"
-        self.url_detail = "ingresoproductotanque-detail"
+        self.url_base = "ingresoproductotanque"
+        self.url_list = self.url_base +"-list"
+        self.url_detail = self.url_base+"-detail"
 
     def test_list_ingreso_producto_tanque(self):
         self.client.force_authenticate(user=self.user)
@@ -260,4 +261,65 @@ class IngresoProductoTanqueTest(APITestCase):
 
         self.instance_tanque.refresh_from_db()
         self.assertEqual(self.instance_tanque.capacidad_disponible, 100)
+
+    def test_enviar_a_otro_tanque(self):
+        #enviar_a_otro_tanque
+        self.client.force_authenticate(user=self.user)
+        tanque_2 = Tanque.objects.create(
+            nombre="T3",
+            capacidad= 100,
+            capacidad_disponible=100,
+        )
+        url = reverse(APP_URL_NAME+self.url_base+'-enviar-a-otro-tanque', kwargs={"pk": self.instance_model.pk})
+        data = {
+            "cantidad_destino": "10", 
+            "tanque_destino": tanque_2.pk,
+        }
+        response = self.client.patch(url, data=data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        tanque_2.refresh_from_db()
+        self.assertEqual(tanque_2.capacidad_disponible, decimal.Decimal("90.0000").quantize(decimal.Decimal('.0001')))
+
+        self.instance_model.refresh_from_db()
+        self.assertEqual(self.instance_model.cantidad, decimal.Decimal("40.0000").quantize(decimal.Decimal('.0001')))
+
+        self.assertTrue(HistorialIngresoProductoTanque.objects.filter(tanque_destino=tanque_2).exists)
+
+    def test_enviar_a_otro_tanque_failed_ingreso(self):
+        self.client.force_authenticate(user=self.user)
+        tanque_3 = Tanque.objects.create(
+            nombre="T3",
+            capacidad= 100,
+            capacidad_disponible=100,
+        )
+        url = reverse(APP_URL_NAME+self.url_base+'-enviar-a-otro-tanque', kwargs={"pk": self.instance_model.pk})
+        data = {
+            "cantidad_destino": float(self.instance_model.cantidad) +1, 
+            "tanque_destino": tanque_3.pk,
+        }
+        response = self.client.patch(url, data=data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_enviar_a_otro_tanque_failed_tanque(self):
+        self.client.force_authenticate(user=self.user)
+        tanque_3 = Tanque.objects.create(
+            nombre="T3",
+            capacidad= 50,
+            capacidad_disponible=50,
+        )
+        url = reverse(APP_URL_NAME+self.url_base+'-enviar-a-otro-tanque', kwargs={"pk": self.instance_model.pk})
+        if self.instance_model.cantidad < 51:
+            self.instance_model.cantidad = 51
+            self.instance_model.save()
+        data = {
+            "cantidad_destino": "51", 
+            "tanque_destino": tanque_3.pk,
+        }
+        response = self.client.patch(url, data=data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 

@@ -31,6 +31,7 @@ class IngresoProductoTanqueSerializer(serializers.ModelSerializer):
             ingreso_producto.peso_neto_disponible -= instance.cantidad
             ingreso_producto.save()
 
-        return instance
 
+        return instance
+    
 

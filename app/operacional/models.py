@@ -126,3 +126,15 @@ class IngresoProductoTanque(BaseModel):
     class Meta:
         db_table = 'ingreso_producto_tanque'
         ordering = ['-id']
+
+class HistorialIngresoProductoTanque(BaseModel):
+    ingreso_producto = models.ForeignKey(IngresoProducto, on_delete=models.CASCADE,)
+    tanque_origen = models.ForeignKey(Tanque, on_delete=models.CASCADE, null=True, blank=True, related_name="historialingresoproductotanque_origen")
+    tanque_destino = models.ForeignKey(Tanque, on_delete=models.CASCADE, null=True, blank=True, related_name="historialingresoproductotanque_destino")
+    ingreso_producto_tanque = models.ForeignKey(IngresoProductoTanque, on_delete=models.CASCADE, null=True, blank=True)
+    cantidad = models.DecimalField(max_digits=14, decimal_places=4)
+    fecha = models.DateField()
+
+    class Meta:
+        db_table = 'historial_ingreso_producto_tanque'
+        ordering = ['-id']
