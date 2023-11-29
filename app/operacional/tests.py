@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from .models import TipoIngreso, IngresoProducto, Tanque, IngresoProductoTanque, HistorialIngresoProductoTanque
+from .models import TipoIngreso, IngresoProducto, Tanque, IngresoProductoTanque, HistorialIngresoProductoTanque, CalidadTanque
 
 import decimal
 
@@ -379,5 +379,73 @@ class HistorialIngresoProductoTanqueTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 0)
+
+
+class CalidadTanqueTest(APITestCase):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.create_user(email="test@test.com", password="test1234")
+        self.tanque = Tanque.objects.create(
+            nombre="T1",
+        )
+        self.calidad_tanque_instance = CalidadTanque.objects.create(tanque=self.tanque)
+        self.url_list = "calidadtanque-list"
+        self.url_detail = "calidadtanque-detail"
+
+    def test_list_calidad_tanque(self):
+        self.client.force_authenticate(user=self.user)
+        url = reverse(APP_URL_NAME+self.url_list)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_calidad_tanque_query_params_with_response(self):
+        self.client.force_authenticate(user=self.user)
+        url = reverse(APP_URL_NAME+self.url_list)
+        response = self.client.get(url, data={"tanque": self.tanque.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_calidad_tanque_query_params_empty_response(self):
+        self.client.force_authenticate(user=self.user)
+        url = reverse(APP_URL_NAME+self.url_list)
+        tanque = Tanque.objects.create(nombre="T3")
+        response = self.client.get(url, data={"tanque": tanque.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_create_calidad_tanque(self):
+        self.client.force_authenticate(user=self.user)
+        url = reverse(APP_URL_NAME+self.url_list)
+        tanque = Tanque.objects.create(nombre="T2")
+        data = {
+            "tanque": tanque.pk,
+        }
+        response = self.client.post(url, data=data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_update(self):
+        self.client.force_authenticate(user=self.user)
+        url = reverse(APP_URL_NAME+self.url_detail, kwargs={"pk": self.calidad_tanque_instance.pk})
+        data = {
+            "anisidina": "100.000"
+        }
+        response = self.client.patch(url, data=data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.calidad_tanque_instance.refresh_from_db()
+        self.assertEqual(self.calidad_tanque_instance.anisidina, decimal.Decimal(data.get("anisidina")).quantize(decimal.Decimal('.0001')))
+
+    def test_delete(self):
+        self.client.force_authenticate(user=self.user)
+        url = reverse(APP_URL_NAME+self.url_detail, kwargs={"pk": self.calidad_tanque_instance.pk})
+        response = self.client.delete(url,)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(CalidadTanque.objects.filter(pk=self.calidad_tanque_instance.pk).exists())
+
 
 

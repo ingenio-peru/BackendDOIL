@@ -42,7 +42,6 @@ class IngresoProductoTanqueViewSet(ModelViewSet):
         )
 
     @extend_schema(
-        responses={200: {"ingreso_producto_tanque": 1}},
         methods=["patch"],
         examples=[
          OpenApiExample(

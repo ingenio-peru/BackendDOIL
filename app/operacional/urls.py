@@ -12,10 +12,11 @@ from operacional.api.viewset.proveedor_viewset import ProveedorViewSet
 from operacional.api.viewset.tanque_viewset import TanqueViewSet
 from operacional.api.viewset.tipo_ingreso_viewset import TipoIngresoViewSet
 from operacional.api.viewset.tipo_tanque_viewset import TipoTanqueViewSet
-from operacional.api.viewset.calidad_viewset import CalidadViewSet
+from operacional.api.viewset.calidad_ingreso_producto_viewset import CalidadIngresoProductoViewSet
 from operacional.api.viewset.tipo_muestra_viewset import TipoMuestraViewSet
 from operacional.api.viewset.ingreso_producto_tanque_viewset import IngresoProductoTanqueViewSet
 from operacional.api.viewset.historial_ingreso_producto_tanque_viewset import HistorialIngresoProductoTanqueViewSet
+from operacional.api.viewset.calidad_tanque_viewset import CalidadTanqueViewSet
 
 
 router = DefaultRouter()
@@ -26,10 +27,12 @@ router.register('productos', ProductoViewSet)
 router.register('proveedores', ProveedorViewSet)
 router.register('ingreso_producto', IngresoProductoViewSet)
 router.register('tipo_ingreso', TipoIngresoViewSet)
-router.register('calidades', CalidadViewSet)
+router.register('calidad_ingreso_producto', CalidadIngresoProductoViewSet)
 router.register('tipo_muestra', TipoMuestraViewSet)
 router.register('ingreso_producto_tanque', IngresoProductoTanqueViewSet)
 router.register('historial_ingreso_producto_tanque', HistorialIngresoProductoTanqueViewSet)
+router.register('calidad_tanque', CalidadTanqueViewSet)
+
 
 urlpatterns = [
     path('', include(router.urls)),

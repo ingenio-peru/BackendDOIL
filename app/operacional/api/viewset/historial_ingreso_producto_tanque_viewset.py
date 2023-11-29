@@ -12,7 +12,7 @@ from operacional.models import HistorialIngresoProductoTanque
 
 
 class HistorialIngresoProductoTanqueViewSet(ModelViewSet):
-    queryset = HistorialIngresoProductoTanque.objects.all().select_related('ingreso_producto')
+    queryset = HistorialIngresoProductoTanque.objects.all().select_related('ingreso_producto', 'tanque_destino', 'tanque_origen')
     serializer_class = HistorialIngresoProductoTanqueSerializer
 
     filterset_fields = {

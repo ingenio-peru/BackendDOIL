@@ -96,7 +96,8 @@ class TipoMuestra(BaseModel):
         ordering = ['-id']
 
 
-class Calidad(BaseModel):
+class CalidadIngresoProducto(BaseModel):
+    """Calidad Ingreso Producto"""
     tipo_muestra = models.ForeignKey(TipoMuestra, on_delete=models.SET_NULL, null=True, blank=True, )
     nombre_muestreador = models.CharField(max_length=255, null=True, blank=True)
     acidez = models.DecimalField(max_digits=14, decimal_places=4, null=True)
@@ -113,7 +114,7 @@ class Calidad(BaseModel):
 
 
     class Meta:
-        db_table = 'calidad'
+        db_table = 'calidad_ingreso_producto'
         ordering = ['-id']
 
 
@@ -137,4 +138,25 @@ class HistorialIngresoProductoTanque(BaseModel):
 
     class Meta:
         db_table = 'historial_ingreso_producto_tanque'
+        ordering = ['-id']
+
+
+class CalidadTanque(BaseModel):
+    tipo_muestra = models.ForeignKey(TipoMuestra, on_delete=models.SET_NULL, null=True, blank=True, )
+    nombre_muestreador = models.CharField(max_length=255, null=True, blank=True)
+    acidez = models.DecimalField(max_digits=14, decimal_places=4, null=True)
+    humedad = models.DecimalField(max_digits=14, decimal_places=4, null=True)
+    impureza = models.DecimalField(max_digits=14, decimal_places=4, null=True)
+    estearina = models.DecimalField(max_digits=14, decimal_places=4, null=True)
+    anisidina = models.DecimalField(max_digits=14, decimal_places=4, null=True)
+    linoleico = models.DecimalField(max_digits=14, decimal_places=4, null=True)
+    epa = models.DecimalField(max_digits=14, decimal_places=4, null=True)
+    dha = models.DecimalField(max_digits=14, decimal_places=4, null=True)
+    indice_yodo = models.DecimalField(max_digits=14, decimal_places=4, null=True)
+
+    tanque = models.ForeignKey(Tanque, on_delete=models.CASCADE,)
+
+
+    class Meta:
+        db_table = 'calidad_tanque'
         ordering = ['-id']
